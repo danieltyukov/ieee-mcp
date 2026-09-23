@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Searches sorted by citations or date only count papers whose title or abstract matches the query. OpenAlex's full search also matches words anywhere in a paper's full text, which filled citation-sorted results with well-cited but unrelated papers.
-- Saved PDF names keep decimals and whole words instead of stopping at the eighth word (`...-With-a-0.13-pJ-K2-Resolution-FoM.pdf`).
+- Saved PDF names keep decimals and whole words instead of stopping at the eighth word (`...-With-a-0.13-pJ-K2-Resolution-FoM.pdf`), and saving a paper again finds the identical file even when it was saved under another name.
 - Titles with Crossref's legacy IEEE symbol codes (`3/spl sigma/`, `/spl plusmn/0.5/spl deg/C`) and TeX such as `$\mu\hbox{W}$` or `\cdot` are shown as plain text.
 
 ## [2.0.0] - 2026-09-23

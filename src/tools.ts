@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { z } from 'zod';
@@ -119,6 +119,32 @@ export function checkDownloadDirectory(directory: string, downloadDir: string, h
     throw new IeeeMcpError('INVALID_ARGUMENT', 'directory must not be a hidden folder.');
   }
   return target;
+}
+
+/**
+ * An identical copy already saved under this paper's prefix, whatever the rest of its name. The
+ * same paper can be saved with or without its title (an article number alone has no title).
+ */
+async function findIdentical(
+  directory: string,
+  base: string,
+  bytes: Uint8Array,
+): Promise<string | undefined> {
+  let names: string[];
+  try {
+    names = await readdir(directory);
+  } catch {
+    return undefined;
+  }
+  for (const name of names) {
+    if (!name.endsWith('.pdf') || (name !== `${base}.pdf` && !name.startsWith(`${base}-`))) continue;
+    const path = join(directory, name);
+    const info = await stat(path).catch(() => undefined);
+    if (!info?.isFile() || info.size !== bytes.byteLength) continue;
+    const existing = await readFile(path).catch(() => undefined);
+    if (existing && Buffer.from(bytes).equals(existing)) return path;
+  }
+  return undefined;
 }
 
 /** Write without overwriting: an identical file is reused, a different one gets a numbered name. */
@@ -369,10 +395,10 @@ export const TOOLS: ToolDefinition[] = [
       const base = ref.articleNumber
         ? `IEEE-${ref.articleNumber}`
         : `DOI-${(ref.doi ?? 'paper').replace(/[^a-z0-9.]+/gi, '_')}`;
-      const saved = await writeNew(
-        join(directory, `${base}${title ? `-${slug(title)}` : ''}.pdf`),
-        file.bytes,
-      );
+      const identical = await findIdentical(directory, base, file.bytes);
+      const saved = identical
+        ? { path: identical, existed: true }
+        : await writeNew(join(directory, `${base}${title ? `-${slug(title)}` : ''}.pdf`), file.bytes);
       return [
         `${saved.existed ? 'Already saved' : 'Saved'} ${label}`,
         `Path: ${saved.path}`,

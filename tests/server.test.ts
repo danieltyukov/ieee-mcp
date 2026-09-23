@@ -163,6 +163,10 @@ describe('MCP server', () => {
     // Saving again reuses the identical file instead of overwriting or duplicating it.
     const again = text(await client.callTool({ name: 'download_pdf', arguments: { id: 'W2156186462' } }));
     expect(again).toMatch(/^Already saved/);
+    // By bare article number the title is unknown without an IEEE key, but the identical file is still found.
+    const byNumber = text(await client.callTool({ name: 'download_pdf', arguments: { id: '771073' } }));
+    expect(byNumber).toMatch(/^Already saved/);
+    expect(byNumber).toContain('IEEE-771073-Toward-unique-identifiers.pdf');
   });
 
   it('formats BibTeX for several papers', async () => {
