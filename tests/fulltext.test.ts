@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { extractPdf, tidy } from '../src/fulltext/extract.js';
-import { cacheKey, chunk, FullText, titleMatches } from '../src/fulltext/fetcher.js';
+import { cacheKey, chunk, citationPdfUrl, FullText, titleMatches } from '../src/fulltext/fetcher.js';
 import { HttpClient } from '../src/http.js';
 import type { Config } from '../src/config.js';
 import { ProxyClient } from '../src/proxy/client.js';
@@ -156,6 +156,64 @@ describe('FullText', () => {
   it('needs an article number for the proxy', async () => {
     const { fulltext } = setup([], { IEEE_PROXY_URL: 'https://ieeexplore-ieee-org.tudelft.idm.oclc.org' });
     await expect(fulltext.pdf({ doi: '10.1109/x', oaPdfUrls: [] })).rejects.toThrow(/no IEEE article number/);
+  });
+});
+
+describe('citationPdfUrl', () => {
+  it('reads the Google Scholar meta tag in either attribute order and resolves it', () => {
+    const base = new URL('https://repository.tudelft.nl/record/uuid:1');
+    expect(citationPdfUrl('<meta name="citation_pdf_url" content="/file/F_1" />', base)).toBe(
+      'https://repository.tudelft.nl/file/F_1',
+    );
+    expect(citationPdfUrl("<meta content='https://x.org/a.pdf' name='citation_pdf_url'>", base)).toBe(
+      'https://x.org/a.pdf',
+    );
+    expect(citationPdfUrl('<meta name="citation_title" content="x">', base)).toBeUndefined();
+    expect(
+      citationPdfUrl('<meta name="citation_pdf_url" content="javascript:alert(1)">', base),
+    ).toBeUndefined();
+  });
+});
+
+describe('FullText landing pages', () => {
+  const landing = () =>
+    new Response('<html><head><meta name="citation_pdf_url" content="/file/F_1"></head></html>', {
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    });
+
+  it('follows a repository landing page to its PDF before using the proxy', async () => {
+    const { fulltext, fetch } = setup(
+      [
+        { match: 'repository.example.edu/record', respond: landing },
+        { match: 'repository.example.edu/file/F_1', respond: pdfResponse },
+      ],
+      { IEEE_PROXY_URL: 'https://ieeexplore-ieee-org.tudelft.idm.oclc.org' },
+    );
+    const file = await fulltext.pdf({
+      articleNumber: '12',
+      title: 'A Fixture Paper on Sigma-Delta Modulators',
+      oaPdfUrls: [],
+      oaLandingUrls: ['https://repository.example.edu/record/1'],
+    });
+    expect(file.origin).toBe('open-access');
+    expect(file.url).toBe('https://repository.example.edu/file/F_1');
+    expect(fetch.calls.map((c) => new URL(c.url).host)).not.toContain(
+      'ieeexplore-ieee-org.tudelft.idm.oclc.org',
+    );
+  });
+
+  it('reports landing pages without a PDF link among the tried copies', async () => {
+    const { fulltext } = setup([
+      { match: 'repository.example.edu/record', respond: () => textResponse('<html>no meta</html>') },
+    ]);
+    await expect(
+      fulltext.pdf({
+        articleNumber: '13',
+        oaPdfUrls: [],
+        oaLandingUrls: ['https://repository.example.edu/record/2'],
+      }),
+    ).rejects.toThrow(/repository\.example\.edu: no PDF link on the page/);
   });
 });
 

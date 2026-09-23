@@ -5,7 +5,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createContext } from '../src/context.js';
 import { createServer } from '../src/server.js';
-import { checkDownloadDirectory } from '../src/tools.js';
+import { checkDownloadDirectory, slug } from '../src/tools.js';
 import type { OaWork } from '../src/sources/openalex.js';
 import {
   fixtureBytes,
@@ -213,5 +213,16 @@ describe('checkDownloadDirectory', () => {
     expect(() => checkDownloadDirectory(resolve('/etc'), downloads, home)).toThrow(/home directory/);
     expect(() => checkDownloadDirectory(`${home}/../other`, downloads, home)).toThrow(/home directory/);
     expect(() => checkDownloadDirectory('refs', downloads, home)).toThrow(/absolute/);
+  });
+});
+
+describe('slug', () => {
+  it('keeps decimals and cuts long titles at a word', () => {
+    expect(slug('A Resistor-Based Temperature Sensor With a 0.13 pJ · K2 Resolution FoM')).toBe(
+      'A-Resistor-Based-Temperature-Sensor-With-a-0.13-pJ-K2-Resolution-FoM',
+    );
+    expect(slug('Über Größe: a study.').length).toBeLessThanOrEqual(80);
+    expect(slug('Über Größe: a study.')).toBe('Uber-Grosse-a-study');
+    expect(slug('word '.repeat(40)).length).toBeLessThanOrEqual(80);
   });
 });

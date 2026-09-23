@@ -48,6 +48,7 @@ export function mergePapers(ieee: Paper, openalex: Paper): Paper {
   if (!ieee.keywords.length) merged.keywords = openalex.keywords;
   if (!ieee.authors.length) merged.authors = openalex.authors;
   merged.oaPdfUrls = openalex.oaPdfUrls;
+  merged.oaLandingUrls = openalex.oaLandingUrls ?? [];
   if (ieee.isOpenAccess === undefined) merged.isOpenAccess = openalex.isOpenAccess;
   merged.source = 'ieee';
   return merged;

@@ -79,6 +79,21 @@ describe('mapWork', () => {
     expect(isIeee(work)).toBe(true);
   });
 
+  it('keeps repository landing pages without a PDF link, but never IEEE or doi.org pages', () => {
+    const paper = mapWork({
+      ...work,
+      best_oa_location: { is_oa: true, pdf_url: null, landing_page_url: 'http://resolver.tudelft.nl/uuid:1' },
+      locations: [
+        { is_oa: true, pdf_url: null, landing_page_url: 'http://resolver.tudelft.nl/uuid:1' },
+        { is_oa: true, pdf_url: null, landing_page_url: 'https://doi.org/10.1109/x.1' },
+        { is_oa: true, pdf_url: null, landing_page_url: 'https://ieeexplore.ieee.org/document/1' },
+        { is_oa: false, pdf_url: null, landing_page_url: 'https://closed.example.org/1' },
+      ],
+    });
+    expect(paper.oaPdfUrls).toEqual([]);
+    expect(paper.oaLandingUrls).toEqual(['http://resolver.tudelft.nl/uuid:1']);
+  });
+
   it('puts repository PDFs before publisher PDFs', () => {
     const paper = mapWork({
       ...work,

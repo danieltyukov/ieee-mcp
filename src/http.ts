@@ -144,6 +144,34 @@ export class HttpClient {
     }
   }
 
+  /** Fetch a web page (one attempt, redirects followed) and return its final address and text. */
+  async getPage(url: string, options: { maxBytes: number }): Promise<{ url: string; text: string }> {
+    debug(`GET ${redactUrl(url)} (page)`);
+    let response: Response;
+    let bytes: Uint8Array;
+    try {
+      response = await this.fetch(url, {
+        headers: { 'User-Agent': this.userAgent, Accept: 'text/html,application/xhtml+xml' },
+        signal: AbortSignal.timeout(this.options.timeoutMs),
+      });
+      if (!response.ok) {
+        await response.body?.cancel().catch(() => undefined);
+        throw new HttpError(response.status, '');
+      }
+      if (Number(response.headers.get('content-length') ?? 0) > options.maxBytes) {
+        await response.body?.cancel().catch(() => undefined);
+        throw new IeeeMcpError('FILE_TOO_LARGE', 'The page is larger than the limit.');
+      }
+      bytes = new Uint8Array(await response.arrayBuffer());
+    } catch (error) {
+      if (error instanceof HttpError || error instanceof IeeeMcpError) throw error;
+      throw transportError(url, error);
+    }
+    if (bytes.byteLength > options.maxBytes)
+      throw new IeeeMcpError('FILE_TOO_LARGE', 'The page is larger than the limit.');
+    return { url: response.url || url, text: new TextDecoder().decode(bytes) };
+  }
+
   /** Download a binary file (one attempt, redirects followed) with a size cap. */
   async getBytes(url: string, options: { accept: string; maxBytes: number }): Promise<Uint8Array> {
     debug(`GET ${redactUrl(url)} (binary)`);

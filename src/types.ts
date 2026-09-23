@@ -44,6 +44,8 @@ export interface Paper {
   isOpenAccess?: boolean;
   /** Directly downloadable open-access PDF locations, best first. */
   oaPdfUrls: string[];
+  /** Open-access repository pages without a direct PDF link; their citation_pdf_url tag usually has one. */
+  oaLandingUrls?: string[];
   isRetracted?: boolean;
   conference?: { location?: string; dates?: string };
 }

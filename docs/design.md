@@ -68,7 +68,9 @@ Every tool that takes a paper accepts any of:
 
 1. Cache (`~/.ieee-mcp/cache`), keyed by article number or DOI.
 2. Open-access copies listed by OpenAlex (`best_oa_location`, then other `locations` with a
-   `pdf_url`), preferring repositories such as arXiv.
+   `pdf_url`), preferring repositories such as arXiv. When a location has only a landing page
+   (typical for institutional repositories), the page's `citation_pdf_url` meta tag, the Google
+   Scholar indexing convention, gives the PDF. IEEE and doi.org pages are never fetched this way.
 3. The institutional proxy, if configured and signed in.
 
 Text is extracted with pdf.js in a worker thread with a time limit and network access
