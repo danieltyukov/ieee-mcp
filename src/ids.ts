@@ -5,6 +5,14 @@ export type PaperId =
 
 const DOI_PATTERN = /^10\.\d{4,9}\/\S+$/;
 
+/**
+ * IEEE Xplore itself, or a proxied copy of it: EZproxy rewrites the host either with hyphens
+ * (ieeexplore-ieee-org.proxy.edu) or by appending its own domain (ieeexplore.ieee.org.proxy.edu).
+ */
+const XPLORE_HOST = /^ieeexplore(?:\.ieee\.org|-ieee-org)(?:\.|$)/;
+/** doi.org and its proxied forms (doi-org.proxy.edu, doi.org.proxy.edu). */
+const DOI_HOST = /^(?:dx\.)?doi(?:\.org|-org)(?:\.|$)/;
+
 /** Lower-case a DOI and strip resolver prefixes. Returns undefined if it is not a DOI. */
 export function normalizeDoi(value: string): string | undefined {
   let text = value.trim();
@@ -49,13 +57,13 @@ export function parsePaperId(input: string): PaperId {
       throw new IeeeMcpError('INVALID_ARGUMENT', `"${text.slice(0, 200)}" is not a valid URL.`);
     }
     const host = url.hostname.toLowerCase();
-    if (host.includes('ieeexplore') || host.includes('ieee-org') || host.includes('ieee.org')) {
+    if (XPLORE_HOST.test(host)) {
       const articleNumber = articleNumberFromUrl(url);
       if (articleNumber) return { kind: 'ieee', articleNumber };
     }
     // Some proxies rewrite DOI links too (doi-org.proxy.edu/10.1109/...).
     const proxiedDoi = normalizeDoi(url.pathname.replace(/^\//, ''));
-    if (proxiedDoi && host.includes('doi')) return { kind: 'doi', doi: proxiedDoi };
+    if (proxiedDoi && DOI_HOST.test(host)) return { kind: 'doi', doi: proxiedDoi };
   }
 
   throw new IeeeMcpError(

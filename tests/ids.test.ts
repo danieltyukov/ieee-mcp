@@ -53,4 +53,15 @@ describe('parsePaperId', () => {
     expect(() => parsePaperId('   ')).toThrow(/required/);
     expect(() => parsePaperId('https://example.com/paper')).toThrow(/Could not read/);
   });
+
+  it('only trusts IEEE Xplore hosts, not look-alikes', () => {
+    expect(() => parsePaperId('https://ieee.org.evil.example/document/123')).toThrow(/Could not read/);
+    expect(() => parsePaperId('https://evil.example/ieeexplore.ieee.org/document/123')).toThrow(
+      /Could not read/,
+    );
+    expect(() => parsePaperId('https://notieeexplore.ieee.org.example/document/123')).toThrow(
+      /Could not read/,
+    );
+    expect(() => parsePaperId('https://undoi.org.example/10.1109/5.771073')).toThrow(/Could not read/);
+  });
 });
