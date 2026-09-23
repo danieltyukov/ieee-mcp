@@ -1,8 +1,10 @@
-# ieee-xplore-mcp
+<p align="center">
+  <img src="assets/logo.svg" alt="ieee-xplore-mcp" width="340">
+</p>
 
-Search, cite and read IEEE Xplore papers from your AI assistant. Works without an IEEE API key, and reads paywalled full text through your university library's proxy.
+<p align="center">Search, cite and read IEEE Xplore papers from your AI assistant.<br>No IEEE API key needed. Paywalled full text through your university library.</p>
 
-<p>
+<p align="center">
   <a href="https://github.com/danieltyukov/ieee-mcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/danieltyukov/ieee-mcp/ci.yml?branch=master&label=CI" alt="CI status"></a>
   <a href="https://github.com/danieltyukov/ieee-mcp/releases"><img src="https://img.shields.io/github/v/release/danieltyukov/ieee-mcp" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
@@ -26,6 +28,15 @@ Things you can ask once it is connected:
 - Read the second result and summarise its architecture section.
 - Which recent papers cite this one, and what did they improve?
 - Give me BibTeX for these five DOIs.
+
+## Quick start
+
+```sh
+npm install -g https://github.com/danieltyukov/ieee-mcp/releases/latest/download/ieee-xplore-mcp.tgz
+claude mcp add ieee-xplore -s user -- ieee-xplore-mcp
+```
+
+That is enough to search, follow citations, cite and read open-access papers. Add a free [OpenAlex key](https://openalex.org/settings/api) for reliable search and your library's proxy for paywalled full text (see [Configure](#configure) and [Institutional access](#institutional-access)).
 
 ## Install
 
