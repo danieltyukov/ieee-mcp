@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.danieltyukov/ieee-mcp",
+  "title": "IEEE Xplore",
+  "description": "Search, cite and read IEEE Xplore papers; full text through your library's proxy.",
+  "repository": {
+    "url": "https://github.com/danieltyukov/ieee-mcp",
+    "source": "github"
+  },
+  "version": "2.0.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "ieee-xplore-mcp",
+      "version": "2.0.0",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "OPENALEX_API_KEY",
+          "description": "Free OpenAlex API key; makes searches reliable.",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "IEEE_PROXY_URL",
+          "description": "Your library's proxied IEEE Xplore address, for paywalled full text.",
+          "isRequired": false
+        },
+        {
+          "name": "IEEE_API_KEY",
+          "description": "Optional IEEE Xplore API key for IEEE-native search filters.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
