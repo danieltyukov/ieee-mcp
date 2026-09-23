@@ -145,18 +145,28 @@ const TEX_SYMBOLS: Record<string, string> = {
   lambda: 'λ',
   pi: 'π',
   times: '×',
+  cdot: '·',
+  pm: '±',
+  plusmn: '±',
+  deg: '°',
 };
 
 /** Crossref titles of IEEE papers carry TeX fragments such as "0.65 pJ $^{\circ}$ C $^{2}$". */
 export function cleanTitle(title: string): string {
-  return title
-    .replace(/\s*\$\s*\^\{\\circ\}\s*\$\s*/g, '°')
-    .replace(/\\([A-Za-z]+)/g, (match, name: string) => TEX_SYMBOLS[name] ?? match)
-    .replace(/\s*\$\s*\^\{([^}$]*)\}\s*\$/g, '^$1')
-    .replace(/\$\s*_\{([^}$]*)\}\s*\$/g, '_$1')
-    .replace(/\$([^$]{1,40})\$/g, '$1')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return (
+    title
+      .replace(/\s*\$\s*\^\{\\circ\}\s*\$\s*/g, '°')
+      // Crossref's legacy IEEE encoding of symbols, e.g. "3/spl sigma/" and "/spl plusmn/0.5".
+      .replace(/\/spl\s*([A-Za-z]+)\//g, (match, name: string) => TEX_SYMBOLS[name] ?? match)
+      .replace(/\\([A-Za-z]+)/g, (match, name: string) => TEX_SYMBOLS[name] ?? match)
+      // After the symbols, so "\mu\hbox{W}" becomes "µW" rather than an unknown "\muW".
+      .replace(/\\(?:hbox|mbox|text|textrm|mathrm)\{([^}]*)\}/g, '$1')
+      .replace(/\s*\$\s*\^\{([^}$]*)\}\s*\$/g, '^$1')
+      .replace(/\$\s*_\{([^}$]*)\}\s*\$/g, '_$1')
+      .replace(/\$([^$]{1,40})\$/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
 }
 
 function contentLabel(work: OaWork): string | undefined {
@@ -356,7 +366,16 @@ export class OpenAlexClient {
     }
     if (query.venue) filters.push(await this.venueFilter(query.venue, notices));
     const params = new URLSearchParams();
-    if (query.query) params.set('search', query.query);
+    if (query.query) {
+      // The full search also matches words anywhere in a paper's full text. That is fine when
+      // results are ranked by relevance, but sorted by citations or date it floods the top with
+      // well-cited papers that barely mention the terms, so match title and abstract instead.
+      if (query.sort === 'relevance') params.set('search', query.query);
+      else {
+        filters.push(`title_and_abstract.search:${filterValue(query.query)}`);
+        notices.push('Sorted results only count papers whose title or abstract matches the query.');
+      }
+    }
     params.set('filter', filters.join(','));
     if (query.sort !== 'relevance') params.set('sort', SORT[query.sort]);
     else if (!query.query) params.set('sort', SORT.citations);

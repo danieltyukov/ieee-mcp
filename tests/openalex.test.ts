@@ -43,6 +43,13 @@ describe('cleanTitle', () => {
     expect(cleanTitle('A 5 $\\mu$W Oscillator at 1 k$\\Omega$')).toBe('A 5 µW Oscillator at 1 kΩ');
     expect(cleanTitle('V$_{DD}$ Scaling')).toBe('V_DD Scaling');
     expect(cleanTitle('Plain   title ')).toBe('Plain title');
+    expect(
+      cleanTitle(
+        'A CMOS smart temperature sensor with a 3/spl sigma/ inaccuracy of /spl plusmn/0.5/spl deg/C',
+      ),
+    ).toBe('A CMOS smart temperature sensor with a 3σ inaccuracy of ±0.5°C');
+    expect(cleanTitle('A 2 $\\mu\\hbox{W}$ 100 nV/rtHz Amplifier')).toBe('A 2 µW 100 nV/rtHz Amplifier');
+    expect(cleanTitle('A 0.13 pJ \\cdot K2 Resolution FoM')).toBe('A 0.13 pJ · K2 Resolution FoM');
   });
 });
 
@@ -124,7 +131,9 @@ describe('OpenAlexClient.plan', () => {
       sort: 'newest',
     });
     const filter = params.get('filter')!;
-    expect(params.get('search')).toBe('"delta sigma" AND temperature');
+    // Sorted by date, so the query must match title or abstract rather than anywhere in the full text.
+    expect(params.get('search')).toBeNull();
+    expect(filter).toContain('title_and_abstract.search:"delta sigma" AND temperature');
     expect(filter).toContain('primary_location.source.host_organization:P4310319808');
     expect(filter).toContain('title.search:sensor low power');
     expect(filter).toContain('raw_affiliation_strings.search:Delft');
@@ -137,6 +146,18 @@ describe('OpenAlexClient.plan', () => {
     expect(params.get('sort')).toBe('publication_date:desc');
     expect(notices.join(' ')).toMatch(/Kofi A\. A\. Makinwa.*Delft University of Technology/);
     expect(notices.join(' ')).toMatch(/cannot reliably tell IEEE conference items apart/);
+  });
+
+  it('ranks by relevance with the full search, and sorts by citations on title and abstract only', async () => {
+    const { openalex } = client([]);
+    const relevance = await openalex.plan({ ...base, query: 'chopper stabilized amplifier' });
+    expect(relevance.params.get('search')).toBe('chopper stabilized amplifier');
+    expect(relevance.params.get('filter')).not.toContain('title_and_abstract');
+    const cited = await openalex.plan({ ...base, query: 'chopper stabilized amplifier', sort: 'citations' });
+    expect(cited.params.get('search')).toBeNull();
+    expect(cited.params.get('filter')).toContain('title_and_abstract.search:chopper stabilized amplifier');
+    expect(cited.params.get('sort')).toBe('cited_by_count:desc');
+    expect(cited.notices.join(' ')).toMatch(/title or abstract/);
   });
 
   it('sorts filter-only queries by citations', async () => {
