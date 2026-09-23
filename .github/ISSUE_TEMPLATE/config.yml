@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup and troubleshooting
+    url: https://github.com/danieltyukov/ieee-mcp/blob/master/docs/clients.md#troubleshooting
+    about: Check the troubleshooting notes first; they cover keys, proxies and sign-in.
+  - name: Security report
+    url: https://github.com/danieltyukov/ieee-mcp/security/advisories/new
+    about: Report a vulnerability privately instead of opening an issue.

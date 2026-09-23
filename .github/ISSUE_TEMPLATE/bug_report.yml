@@ -1,0 +1,49 @@
+name: Bug report
+description: Something does not work as described.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you paste anything: remove API keys, cookies and anything from `~/.ieee-mcp`.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `ieee-xplore-mcp --version`.
+      placeholder: 2.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: MCP client
+      placeholder: Claude Code 2.1
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The tool you called, its arguments, the error code if any, and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of `ieee-xplore-mcp status --check`
+      description: It contains no secrets. Your proxy host is shown; redact it if you prefer.
+      render: text
+  - type: input
+    id: proxy
+    attributes:
+      label: Proxy type
+      description: If the problem is with institutional access, the kind of proxy (OCLC hosted, self-hosted EZproxy, other) and the host style (hyphenated or dotted).

@@ -1,0 +1,18 @@
+name: Feature request
+description: Suggest a new tool, filter or data source.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The research task, for example the question you would ask your assistant.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What the tool should do and return, and which documented API could provide the data.
+    validations:
+      required: true
