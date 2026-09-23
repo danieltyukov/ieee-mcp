@@ -70,6 +70,7 @@ async function paperRef(
     return {
       ref: {
         oaPdfUrls: paper.oaPdfUrls,
+        ...(paper.oaLandingUrls?.length ? { oaLandingUrls: paper.oaLandingUrls } : {}),
         ...(paper.articleNumber ? { articleNumber: paper.articleNumber } : {}),
         ...(paper.doi ? { doi: paper.doi } : {}),
         ...(lookupNote ? { lookupNote } : {}),
@@ -140,15 +141,23 @@ async function writeNew(path: string, bytes: Uint8Array): Promise<{ path: string
   );
 }
 
-function slug(text: string): string {
-  return text
+/** A file-name friendly form of a title: ASCII words joined by hyphens, decimals kept, at most 80 characters. */
+export function slug(text: string): string {
+  const words = text
     .normalize('NFKD')
     .replace(/\p{M}/gu, '')
-    .replace(/[^A-Za-z0-9]+/g, ' ')
-    .trim()
+    .replace(/ß/g, 'ss')
+    .replace(/[^A-Za-z0-9.]+/g, ' ')
     .split(' ')
-    .slice(0, 8)
-    .join('-');
+    .map((word) => word.replace(/^\.+|\.+$/g, ''))
+    .filter(Boolean);
+  let result = '';
+  for (const word of words) {
+    const next = result ? `${result}-${word}` : word;
+    if (next.length > 80) break;
+    result = next;
+  }
+  return result || words[0]?.slice(0, 80) || 'paper';
 }
 
 export const TOOLS: ToolDefinition[] = [

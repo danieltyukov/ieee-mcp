@@ -117,7 +117,13 @@ export function formatPaper(paper: Paper, links: PaperLinks = {}): string {
   const access =
     paper.isOpenAccess === undefined ? 'unknown' : paper.isOpenAccess ? 'open access' : 'subscription';
   lines.push(
-    `Access: ${access}${paper.oaPdfUrls.length ? ` (open PDF: ${paper.oaPdfUrls[0]})` : ''}${links.proxy ? ' | institutional proxy configured' : ''}`,
+    `Access: ${access}${
+      paper.oaPdfUrls.length
+        ? ` (open PDF: ${paper.oaPdfUrls[0]})`
+        : paper.oaLandingUrls?.length
+          ? ` (open copy: ${paper.oaLandingUrls[0]})`
+          : ''
+    }${links.proxy ? ' | institutional proxy configured' : ''}`,
   );
   if (paper.keywords.length) lines.push(`Keywords: ${paper.keywords.join(', ')}`);
   const urls: string[] = [];

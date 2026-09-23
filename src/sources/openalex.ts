@@ -124,6 +124,27 @@ function oaPdfUrls(work: OaWork): string[] {
   return [...urls].sort((a, b) => Number(/ieee\.org/i.test(a)) - Number(/ieee\.org/i.test(b)));
 }
 
+/**
+ * Open-access landing pages that list no PDF, typically institutional repositories. Publisher and
+ * resolver pages are left out: the Xplore page is not scraped, and doi.org leads there.
+ */
+function oaLandingUrls(work: OaWork): string[] {
+  const urls = new Set<string>();
+  for (const location of [work.best_oa_location, ...(work.locations ?? [])]) {
+    if (!location?.is_oa || location.pdf_url || !location.landing_page_url) continue;
+    let host: string;
+    try {
+      host = new URL(location.landing_page_url).hostname.toLowerCase();
+    } catch {
+      continue;
+    }
+    if (host === 'doi.org' || host.endsWith('.doi.org') || host === 'ieee.org' || host.endsWith('.ieee.org'))
+      continue;
+    urls.add(location.landing_page_url);
+  }
+  return [...urls];
+}
+
 const TYPE_LABEL: Record<string, string> = {
   'journal-article': 'journal article',
   'proceedings-article': 'conference paper',
@@ -199,6 +220,7 @@ export function mapWork(work: OaWork): Paper {
       .filter((k): k is string => Boolean(k))
       .slice(0, 8),
     oaPdfUrls: oaPdfUrls(work),
+    oaLandingUrls: oaLandingUrls(work),
   };
   const doi = work.doi?.replace(/^https?:\/\/doi\.org\//i, '').toLowerCase();
   const optional: Partial<Paper> = {

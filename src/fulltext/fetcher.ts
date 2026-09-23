@@ -15,6 +15,8 @@ export interface PaperRef {
   /** Used to check that an open-access copy is really this paper. */
   title?: string;
   oaPdfUrls: string[];
+  /** Repository pages to look for a PDF link on, when no direct PDF is known. */
+  oaLandingUrls?: string[];
 }
 
 export type PdfOrigin = 'cache' | 'open-access' | 'proxy';
@@ -71,6 +73,34 @@ export function cacheKey(ref: PaperRef): string {
  */
 export function titleMatches(title: string, text: string): boolean {
   return titleCoverage(title, text.slice(0, 8000).replace(/-\n/g, '')) >= 0.6;
+}
+
+/**
+ * The PDF a repository page declares for indexers in a citation_pdf_url meta tag (the Google
+ * Scholar convention that DSpace, EPrints and most institutional repositories follow).
+ */
+export function citationPdfUrl(html: string, base: URL): string | undefined {
+  for (const [tag] of html.matchAll(/<meta\b[^>]*>/gi)) {
+    if (!/\bname\s*=\s*["']citation_pdf_url["']/i.test(tag)) continue;
+    const content = /\bcontent\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]?.replace(/&amp;/g, '&').trim();
+    if (!content) continue;
+    try {
+      const url = new URL(content, base);
+      if (url.protocol === 'https:' || url.protocol === 'http:') return url.toString();
+    } catch {
+      // not a usable link; keep looking
+    }
+  }
+  return undefined;
+}
+
+function hostOf(url: string): string | undefined {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.host : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /** Read a cache file. The cache is best effort: an unreadable one counts as a miss. */
@@ -141,19 +171,30 @@ export class FullText {
 
     const failures: string[] = [];
     let mismatched = 0;
-    for (const url of ref.oaPdfUrls.slice(0, 4)) {
-      let host: string;
-      try {
-        const parsed = new URL(url);
-        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error('scheme');
-        host = parsed.host;
-      } catch {
+    // Direct PDF links first, then repository pages that point to one.
+    const candidates = [
+      ...ref.oaPdfUrls.slice(0, 4).map((url) => ({ url, landing: false })),
+      ...(ref.oaLandingUrls ?? []).slice(0, 2).map((url) => ({ url, landing: true })),
+    ];
+    for (const candidate of candidates) {
+      const host = hostOf(candidate.url);
+      if (!host) {
         failures.push('an invalid link');
         continue;
       }
+      let url = candidate.url;
       let bytes: Uint8Array;
       let text: PdfText;
       try {
+        if (candidate.landing) {
+          const page = await this.http.getPage(url, { maxBytes: 2 * 1024 * 1024 });
+          const pdfUrl = citationPdfUrl(page.text, new URL(page.url));
+          if (!pdfUrl) {
+            failures.push(`${host}: no PDF link on the page`);
+            continue;
+          }
+          url = pdfUrl;
+        }
         bytes = await this.http.getBytes(url, {
           accept: 'application/pdf',
           maxBytes: this.config.maxPdfBytes,
@@ -185,7 +226,7 @@ export class FullText {
         'NO_FULL_TEXT',
         mismatched
           ? `The open-access copies listed for this paper are different documents (a metadata error at OpenAlex), and no institutional proxy is configured (IEEE_PROXY_URL).${tried}`
-          : ref.oaPdfUrls.length
+          : ref.oaPdfUrls.length || ref.oaLandingUrls?.length
             ? `The open-access copies could not be downloaded, and no institutional proxy is configured (IEEE_PROXY_URL).${tried}`
             : "No open-access copy exists. Set IEEE_PROXY_URL to read it through your institution's subscription.",
       );
