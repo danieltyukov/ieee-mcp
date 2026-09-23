@@ -1,6 +1,6 @@
 {
   "name": "ieee-xplore-mcp",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "MCP server for IEEE Xplore: search, metadata, citations, BibTeX and full text through your institution's proxy. Works without an IEEE API key.",
   "type": "module",
   "license": "MIT",

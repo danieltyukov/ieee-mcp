@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-09-23
+
+### Fixed
+
+- Searches sorted by citations or date only count papers whose title or abstract matches the query. OpenAlex's full search also matches words anywhere in a paper's full text, which filled citation-sorted results with well-cited but unrelated papers.
+- Titles with Crossref's legacy IEEE symbol codes (`3/spl sigma/`, `/spl plusmn/0.5/spl deg/C`) and TeX such as `$\mu\hbox{W}$` or `\cdot` are shown as plain text.
+
 ## [2.0.0] - 2026-09-23
 
 A rewrite. 1.x depended entirely on an IEEE API key, which IEEE deactivates when idle (`403 Developer Inactive`), so every tool failed for most users.
