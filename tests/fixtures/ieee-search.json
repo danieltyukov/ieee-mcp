@@ -1,0 +1,61 @@
+{
+  "total_records": 1284,
+  "total_searched": 6000000,
+  "articles": [
+    {
+      "doi": "10.1109/5.771073",
+      "title": "Toward unique identifiers",
+      "publisher": "IEEE",
+      "issue": "7",
+      "rank": 1,
+      "authors": {
+        "authors": [
+          {
+            "affiliation": "International DOI Foundation, Kidlington, UK",
+            "authorUrl": "https://ieeexplore.ieee.org/author/37374421600",
+            "id": 37374421600,
+            "full_name": "N. Paskin",
+            "author_order": 1
+          }
+        ]
+      },
+      "access_type": "LOCKED",
+      "content_type": "Journals",
+      "abstract": "Identifiers are a fundamental building block of information systems.",
+      "article_number": "771073",
+      "pdf_url": "https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=771073",
+      "html_url": "https://ieeexplore.ieee.org/document/771073/",
+      "abstract_url": "https://ieeexplore.ieee.org/document/771073/",
+      "publication_title": "Proceedings of the IEEE",
+      "issn": "0018-9219",
+      "publication_number": 5,
+      "volume": "87",
+      "start_page": "1208",
+      "end_page": "1227",
+      "publication_year": 1999,
+      "publication_date": "July 1999",
+      "citing_paper_count": 118,
+      "citing_patent_count": 4,
+      "index_terms": {
+        "ieee_terms": { "terms": ["Identity management systems", "Internet"] },
+        "author_terms": { "terms": ["digital object identifier"] }
+      }
+    },
+    {
+      "doi": "10.1109/ISSCC.2020.9063000",
+      "title": "A Conference Paper Example",
+      "publisher": "IEEE",
+      "authors": { "authors": [{ "full_name": "B. Second", "author_order": 2 }, { "full_name": "A. First", "author_order": 1 }] },
+      "access_type": "OPEN_ACCESS",
+      "content_type": "Conferences",
+      "article_number": "9063000",
+      "publication_title": "2020 IEEE International Solid-State Circuits Conference (ISSCC)",
+      "start_page": "1",
+      "end_page": "3",
+      "publication_year": "2020",
+      "conference_location": "San Francisco, CA, USA",
+      "conference_dates": "16-20 Feb. 2020",
+      "citing_paper_count": 7
+    }
+  ]
+}
