@@ -49,7 +49,7 @@ for (const tool of TOOLS) {
   for (const [name, property] of properties) {
     const required = schema.required?.includes(name) && property.default === undefined ? 'yes' : 'no';
     const fallback = property.default === undefined ? '' : `\`${JSON.stringify(property.default)}\``;
-    const description = (property.description ?? '').replace(/\|/g, '\\|');
+    const description = (property.description ?? '').replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
     lines.push(`| \`${name}\` | ${typeOf(property)} | ${required} | ${fallback} | ${description} |`);
   }
   lines.push('');
