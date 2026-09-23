@@ -1,5 +1,11 @@
 node_modules/
 dist/
-*.js.map
+coverage/
+*.log
+*.tgz
+.DS_Store
+Thumbs.db
 .env
+.env.*
 ieee-key.txt
+.claude/

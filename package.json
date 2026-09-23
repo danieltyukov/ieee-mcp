@@ -1,19 +1,77 @@
 {
   "name": "ieee-xplore-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for IEEE Xplore API - search and retrieve academic papers",
+  "version": "2.0.0",
+  "description": "MCP server for IEEE Xplore: search, metadata, citations, BibTeX and full text through your institution's proxy. Works without an IEEE API key.",
   "type": "module",
-  "main": "dist/index.js",
+  "license": "MIT",
+  "author": "Daniel Tyukov",
+  "mcpName": "io.github.danieltyukov/ieee-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danieltyukov/ieee-mcp.git"
+  },
+  "homepage": "https://github.com/danieltyukov/ieee-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/danieltyukov/ieee-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ieee",
+    "ieee-xplore",
+    "openalex",
+    "research",
+    "papers",
+    "citations",
+    "bibtex",
+    "ezproxy",
+    "claude",
+    "cursor"
+  ],
+  "bin": {
+    "ieee-xplore-mcp": "dist/cli.js",
+    "ieee-mcp": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "tsup",
+    "dev": "tsx src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:live": "IEEE_MCP_LIVE=1 vitest run tests/live",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "docs:tools": "tsx scripts/generate-tool-docs.ts",
+    "prepack": "npm run build"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.26.0",
-    "zod": "^3.24.0"
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "pdfjs-dist": "^6.3.289",
+    "playwright-core": "^1.63.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "^5.7.0"
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.20.3",
+    "eslint": "^9.39.0",
+    "prettier": "^3.9.9",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.1"
+  },
+  "overrides": {
+    "esbuild": "^0.28.2"
   }
 }
