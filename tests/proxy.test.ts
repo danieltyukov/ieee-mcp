@@ -49,7 +49,16 @@ async function setup(
     },
     ...(options.renew ? { renew: options.renew } : {}),
   });
-  return { client, fetch, sessions, usage, sleeps, config, advance: (ms: number) => (now += ms) };
+  return {
+    client,
+    fetch,
+    sessions,
+    usage,
+    sleeps,
+    config,
+    now: () => now,
+    advance: (ms: number) => (now += ms),
+  };
 }
 
 const pdfResponse = () => new Response(pdf, { status: 200, headers: { 'content-type': 'application/pdf' } });
@@ -232,11 +241,14 @@ describe('ProxyClient.status', () => {
 
 describe('ProxyClient hardening', () => {
   it('shares the daily cap between server processes', async () => {
-    const { client, config, sessions, usage } = await setup([{ match: 'getPDF.jsp', respond: pdfResponse }], {
-      limit: '2',
-    });
+    const { client, config, sessions, usage, now } = await setup(
+      [{ match: 'getPDF.jsp', respond: pdfResponse }],
+      { limit: '2' },
+    );
     const fetch = mockFetch([{ match: 'getPDF.jsp', respond: pdfResponse }]);
-    const other = new ProxyClient(config, sessions, usage, { fetch, sleep: async () => undefined });
+    // Same fake clock as `client`: with the real clock the two disagree on the UTC day and each
+    // resets the other's count.
+    const other = new ProxyClient(config, sessions, usage, { fetch, now, sleep: async () => undefined });
     const results = await Promise.allSettled([
       client.fetchPdf('1'),
       other.fetchPdf('2'),
