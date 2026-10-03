@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ieee-xplore-mcp</title>
+  <meta name="description" content="A local MCP server that lets Claude, Cursor, VS Code, Codex and other AI assistants search, cite and read IEEE Xplore papers. No IEEE API key needed; paywalled full text through your university library.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://danieltyukov.github.io/ieee-mcp/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ieee-xplore-mcp">
+  <meta property="og:title" content="ieee-xplore-mcp">
+  <meta property="og:description" content="Search, cite and read IEEE Xplore papers from your AI assistant. No IEEE API key needed. Paywalled full text through your university library.">
+  <meta property="og:url" content="https://danieltyukov.github.io/ieee-mcp/">
+  <meta property="og:image" content="https://danieltyukov.github.io/ieee-mcp/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The ieee-xplore-mcp mark next to the line: IEEE Xplore, in your AI assistant.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ieee-xplore-mcp">
+  <meta name="twitter:description" content="Search, cite and read IEEE Xplore papers from your AI assistant. No IEEE API key needed. Paywalled full text through your university library.">
+  <meta name="twitter:image" content="https://danieltyukov.github.io/ieee-mcp/og.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="./"><img src="logo-mark.svg" alt=""> ieee-xplore-mcp</a>
+      <nav class="links" aria-label="Project">
+        <a href="https://github.com/danieltyukov/ieee-mcp">GitHub</a>
+        <a href="https://github.com/danieltyukov/ieee-mcp/tree/master/docs">Docs</a>
+        <a href="https://github.com/danieltyukov/ieee-mcp/releases">Releases</a>
+      </nav>
+    </header>
+
+    <main>
+    <div class="hero">
+      <h1>IEEE Xplore, <em>in your AI assistant.</em></h1>
+      <p class="lead">ieee-xplore-mcp is a small server that runs on your own computer. It lets Claude, Cursor, VS Code, Codex and any other MCP client search IEEE journals, conferences and standards, follow citations, write references and read full papers. It needs no IEEE API key, and paywalled papers open through your university library.</p>
+
+      <div class="tabset install" role="group" aria-label="Install">
+        <input type="radio" name="install" id="i-cc" checked>
+        <input type="radio" name="install" id="i-any">
+        <input type="radio" name="install" id="i-src">
+        <div class="tabs">
+          <label for="i-cc">Claude Code</label>
+          <label for="i-any">Any client</label>
+          <label for="i-src">From source</label>
+        </div>
+        <div class="panel p-i-cc code"><pre><code>npm install -g https://github.com/danieltyukov/ieee-mcp/releases/latest/download/ieee-xplore-mcp.tgz
+claude mcp add ieee-xplore -s user <span class="nb">-- ieee-xplore-mcp</span></code></pre><button class="copy" type="button">Copy</button></div>
+        <div class="panel p-i-any code"><pre><code>npm install -g https://github.com/danieltyukov/ieee-mcp/releases/latest/download/ieee-xplore-mcp.tgz
+ieee-xplore-mcp status</code></pre><button class="copy" type="button">Copy</button></div>
+        <div class="panel p-i-src code"><pre><code>git clone https://github.com/danieltyukov/ieee-mcp.git
+cd ieee-mcp &amp;&amp; npm ci &amp;&amp; npm run build &amp;&amp; npm link</code></pre><button class="copy" type="button">Copy</button></div>
+      </div>
+      <p class="note">Node 20 or newer. For Claude Desktop, Cursor, VS Code and Codex, add the server as shown under <a href="#connect">Connect a client</a>.</p>
+    </div>
+
+    <section id="how" aria-labelledby="how-h">
+      <h2 class="eyebrow" id="how-h">How it works</h2>
+      <ol class="steps">
+        <li><b>Install</b><span>One npm command installs the server from the latest GitHub release. Adding it to your client takes one more line, or a short JSON block.</span></li>
+        <li><b>Add a free OpenAlex key</b><span>Search, metadata and citations come from OpenAlex, restricted to IEEE publications. A free key keeps searches from being throttled. An IEEE Xplore API key is optional and adds IEEE's own search filters.</span></li>
+        <li><b>Sign in to your library once</b><span>Only needed for paywalled full text. Point the server at your library's proxied Xplore address and run <code>ieee-xplore-mcp login</code>. Your university's own sign-in page opens in a browser window.</span></li>
+        <li><b>Ask</b><span>Open your assistant and ask about the literature. It searches, follows citations, reads papers and writes the references.</span></li>
+      </ol>
+      <p>Everything runs on your machine. The session, the paper cache and the browser profile live in <code>~/.ieee-mcp</code>. There is no hosted backend.</p>
+    </section>
+
+    <section id="ask" aria-labelledby="ask-h">
+      <h2 class="eyebrow" id="ask-h">Things people ask it</h2>
+      <ul class="ask">
+        <li>Find the most cited IEEE papers on chopper-stabilised amplifiers since 2018.</li>
+        <li>What has Kofi Makinwa published in JSSC in the last three years?</li>
+        <li>Read the second result and summarise its architecture section.</li>
+        <li>Which recent papers cite this one, and what did they improve?</li>
+        <li>Give me BibTeX for these five DOIs.</li>
+        <li>Find papers on spotting wake words with a microwatt power budget.</li>
+        <li>Survey the IEEE literature on time-to-digital converters since 2020.</li>
+        <li>Save the PDF of this paper to my downloads folder.</li>
+      </ul>
+    </section>
+
+    <section id="features" aria-labelledby="features-h">
+      <h2 class="eyebrow" id="features-h">What it covers</h2>
+      <dl class="features">
+        <div><dt>Search</dt><dd>Keywords or boolean queries with AND, OR, NOT and quoted phrases, narrowed by title, author, affiliation, venue, year, content type and open access. Semantic search finds papers from a plain-language description. Sort by relevance, citations or date.</dd></div>
+        <div><dt>Paper details</dt><dd>Authors with affiliations, venue, date, DOI and IEEE article number, citation counts, open-access status, keywords and the abstract. A DOI, article number, Xplore URL or OpenAlex id all work as input.</dd></div>
+        <div><dt>Citation graph</dt><dd>Papers that cite a paper, its reference list and closely related work, each sortable and paged, so the assistant can walk forwards and backwards from a starting point.</dd></div>
+        <div><dt>Full text</dt><dd><code>read_paper</code> returns the text in chunks from an open-access copy or through your institution's proxy. <code>download_pdf</code> saves the file. Open-access PDFs are checked against the paper's title before use.</dd></div>
+        <div><dt>References</dt><dd>BibTeX, RIS and CSL-JSON, or formatted IEEE, APA, Chicago, Harvard and MLA references, for up to 50 papers in one call.</dd></div>
+        <div><dt>No key required</dt><dd>Without an IEEE API key everything runs on OpenAlex and doi.org. With one, search uses IEEE's own filters, and when IEEE rejects the key or its quota runs out, the server switches to OpenAlex and says so.</dd></div>
+      </dl>
+    </section>
+
+    <section id="tools" aria-labelledby="tools-h">
+      <h2 class="eyebrow" id="tools-h">Tools</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Tool</th><th scope="col">What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>search_papers</code></td><td>Keyword, boolean or semantic search with author, venue, affiliation, year, type and open-access filters.</td></tr>
+            <tr><td><code>get_paper</code></td><td>Full metadata and abstract for a DOI, IEEE article number, Xplore URL or OpenAlex id.</td></tr>
+            <tr><td><code>get_citing_papers</code></td><td>Papers that cite a paper, sortable by citations or date.</td></tr>
+            <tr><td><code>get_references</code></td><td>A paper's reference list.</td></tr>
+            <tr><td><code>get_related_papers</code></td><td>Closely related papers.</td></tr>
+            <tr><td><code>read_paper</code></td><td>Full text in chunks, from an open-access copy or the institutional proxy.</td></tr>
+            <tr><td><code>download_pdf</code></td><td>Save one paper's PDF to disk.</td></tr>
+            <tr><td><code>cite_paper</code></td><td>BibTeX, RIS, CSL-JSON or formatted references for up to 50 papers.</td></tr>
+            <tr><td><code>status</code></td><td>Which keys and access paths are configured and working.</td></tr>
+            <tr><td><code>sign_in</code></td><td>Open the proxy sign-in window.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>There is also a <code>literature_review</code> prompt that walks the assistant through a structured survey of a topic. Every input field is listed in <a href="https://github.com/danieltyukov/ieee-mcp/blob/master/docs/tools.md">docs/tools.md</a>.</p>
+    </section>
+
+    <section id="connect" aria-labelledby="connect-h">
+      <h2 class="eyebrow" id="connect-h">Connect a client</h2>
+      <p>The server speaks MCP over stdio. Both keys below are optional: leave out what you do not use.</p>
+      <div class="tabset" role="group" aria-label="Client configuration">
+        <input type="radio" name="connect" id="c-cc" checked>
+        <input type="radio" name="connect" id="c-desk">
+        <input type="radio" name="connect" id="c-vsc">
+        <input type="radio" name="connect" id="c-codex">
+        <div class="tabs">
+          <label for="c-cc">Claude Code</label>
+          <label for="c-desk">Claude Desktop, Cursor</label>
+          <label for="c-vsc">VS Code</label>
+          <label for="c-codex">Codex</label>
+        </div>
+        <div class="panel p-c-cc">
+          <p class="where">Run once. <code>-s user</code> makes it available in every project.</p>
+          <div class="code"><pre><code>claude mcp add ieee-xplore -s user \
+  -e OPENALEX_API_KEY=your-key \
+  -e IEEE_PROXY_URL=https://ieeexplore-ieee-org.tudelft.idm.oclc.org \
+  -- ieee-xplore-mcp</code></pre><button class="copy" type="button">Copy</button></div>
+        </div>
+        <div class="panel p-c-desk">
+          <p class="where">In <code>claude_desktop_config.json</code> (Settings, Developer, Edit Config) or <code>~/.cursor/mcp.json</code>, then restart the app.</p>
+          <div class="code"><pre><code>{
+  "mcpServers": {
+    "ieee-xplore": {
+      "command": "ieee-xplore-mcp",
+      "env": {
+        "OPENALEX_API_KEY": "your-key",
+        "IEEE_PROXY_URL": "https://ieeexplore-ieee-org.tudelft.idm.oclc.org"
+      }
+    }
+  }
+}</code></pre><button class="copy" type="button">Copy</button></div>
+        </div>
+        <div class="panel p-c-vsc">
+          <p class="where">In <code>.vscode/mcp.json</code> for one workspace, or in your user-level MCP configuration.</p>
+          <div class="code"><pre><code>{
+  "servers": {
+    "ieee-xplore": {
+      "type": "stdio",
+      "command": "ieee-xplore-mcp",
+      "env": {
+        "OPENALEX_API_KEY": "your-key",
+        "IEEE_PROXY_URL": "https://ieeexplore-ieee-org.tudelft.idm.oclc.org"
+      }
+    }
+  }
+}</code></pre><button class="copy" type="button">Copy</button></div>
+        </div>
+        <div class="panel p-c-codex">
+          <p class="where">In <code>~/.codex/config.toml</code>.</p>
+          <div class="code"><pre><code>[mcp_servers.ieee-xplore]
+command = "ieee-xplore-mcp"
+env = { OPENALEX_API_KEY = "your-key", IEEE_PROXY_URL = "https://ieeexplore-ieee-org.tudelft.idm.oclc.org" }</code></pre><button class="copy" type="button">Copy</button></div>
+        </div>
+      </div>
+      <p>Get the OpenAlex key at <a href="https://openalex.org/settings/api">openalex.org/settings/api</a>. If a desktop app cannot find <code>ieee-xplore-mcp</code> (common with nvm), use the absolute paths of <code>node</code> and the package's <code>dist/cli.js</code>. All settings and troubleshooting are in <a href="https://github.com/danieltyukov/ieee-mcp/blob/master/docs/clients.md">docs/clients.md</a>.</p>
+    </section>
+
+    <section id="library" aria-labelledby="library-h">
+      <h2 class="eyebrow" id="library-h">Institutional access</h2>
+      <p>If your university subscribes to IEEE Xplore through EZproxy or OCLC, the server reads paywalled papers the same way you would in a browser.</p>
+      <ol class="steps">
+        <li><b>Find your proxy address</b><span>Open IEEE Xplore from your library's website and copy the address. It looks like <code>https://ieeexplore-ieee-org.&lt;institution&gt;.idm.oclc.org</code>. Set it as <code>IEEE_PROXY_URL</code>.</span></li>
+        <li><b>Sign in once</b><span>Run <code>ieee-xplore-mcp login</code>. A browser window opens on your library's sign-in page. Sign in as usual, including MFA; the window closes once Xplore loads.</span></li>
+        <li><b>Read</b><span><code>read_paper</code> and <code>download_pdf</code> now fetch PDFs through the proxy. An expired session renews silently from the saved profile. If your university asks for the password again, the tools report <code>AUTH_REQUIRED</code> and you sign in once more.</span></li>
+      </ol>
+      <p>Library licences allow personal use and forbid systematic downloading, and heavy downloading can get a whole institution blocked. So the server fetches one paper per request, waits at least 10 seconds between proxy downloads, stops at 40 a day by default and caches every paper, so rereading costs nothing. It has no bulk download tool.</p>
+    </section>
+
+    <section id="sources" aria-labelledby="sources-h">
+      <h2 class="eyebrow" id="sources-h">Where the data comes from</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Source</th><th scope="col">Used for</th></tr></thead>
+          <tbody>
+            <tr><td>OpenAlex, restricted to IEEE</td><td>Search, metadata, abstracts, citations, references, related work, open-access locations.</td></tr>
+            <tr><td>IEEE Xplore API, if a key is set</td><td>Search with IEEE's own filters, IEEE index terms, patent citations.</td></tr>
+            <tr><td>doi.org</td><td>IEEE article numbers for DOIs, and citation formatting.</td></tr>
+            <tr><td>Your institution's proxy</td><td>PDFs of paywalled papers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Metadata comes only from documented public APIs; the server does not scrape IEEE Xplore pages. Every search result names the source that answered it.</p>
+    </section>
+
+    <section id="privacy" aria-labelledby="privacy-h">
+      <h2 class="eyebrow" id="privacy-h">Privacy</h2>
+      <ul class="plain">
+        <li>Runs locally. There is no hosted service and no account with anyone but your library.</li>
+        <li>Proxy cookies and the browser profile live under <code>~/.ieee-mcp</code> with owner-only permissions and never reach the model.</li>
+        <li>Your password and MFA are typed only into your university's own sign-in page.</li>
+        <li><code>download_pdf</code> writes only inside your home directory, never into hidden folders, and never overwrites a file.</li>
+        <li><code>ieee-xplore-mcp logout</code> removes the session and profile; <code>ieee-xplore-mcp cache clear</code> removes cached papers.</li>
+      </ul>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-h">
+      <h2 class="eyebrow" id="faq-h">Questions</h2>
+      <details><summary>Do I need an IEEE API key?</summary><p>No. Search, metadata, citations and references work on OpenAlex without one. A key adds IEEE's conference and journal filter, index terms and patent citation counts. IEEE deactivates keys that go unused (<code>403 Developer Inactive</code>); the server then falls back to OpenAlex.</p></details>
+      <details><summary>Will my university's library work?</summary><p>If you reach IEEE Xplore through a proxy address, such as an <code>idm.oclc.org</code> host or another EZproxy host, yes. Universities that grant access only by IP range, on campus or over VPN, have no proxy address; open-access papers still work there.</p></details>
+      <details><summary>Which browsers can do the sign-in?</summary><p>Chrome, Edge, Chromium or Brave, already installed. Point <code>IEEE_MCP_BROWSER</code> at one if it is not found, or run <code>npx playwright-core install chromium</code>.</p></details>
+      <details><summary>Why do searches report RATE_LIMITED?</summary><p>OpenAlex throttles anonymous requests when it is busy. Set <code>OPENALEX_API_KEY</code>; the key is free.</p></details>
+      <details><summary>Why can't I filter conferences from journals?</summary><p>OpenAlex files most IEEE conference proceedings as journals, so that filter needs an IEEE key. Use <code>venue</code> to target a specific conference or journal instead.</p></details>
+      <details><summary>I used version 1.x. What changed?</summary><p>2.0 is a rewrite. Tool names changed, the IEEE key is optional, and <code>IEEE_AUTH_TOKEN</code> is replaced by institutional proxy access. See the <a href="https://github.com/danieltyukov/ieee-mcp/blob/master/CHANGELOG.md">changelog</a>.</p></details>
+      <details><summary>Is this official?</summary><p>No. It is an independent open source project and is not affiliated with IEEE, OpenAlex or any university.</p></details>
+    </section>
+    </main>
+
+    <footer>
+      <span>MIT license</span>
+      <a href="https://github.com/danieltyukov/ieee-mcp/blob/master/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/danieltyukov/ieee-mcp/issues">Issues</a>
+      <a href="https://github.com/danieltyukov/ieee-mcp/blob/master/CONTRIBUTING.md">Contributing</a>
+      <span>Not affiliated with IEEE, OpenAlex or any university.</span>
+    </footer>
+  </div>
+  <script>
+    for (const button of document.querySelectorAll('.copy')) {
+      button.addEventListener('click', async () => {
+        const text = button.parentElement.querySelector('code').textContent;
+        try { await navigator.clipboard.writeText(text); button.textContent = 'Copied'; }
+        catch { button.textContent = 'Select and copy'; }
+        setTimeout(() => { button.textContent = 'Copy'; }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>
