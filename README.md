@@ -11,6 +11,13 @@
   <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node 20 or newer">
 </p>
 
+<p align="center">
+  <a href="https://danieltyukov.github.io/ieee-mcp/">Website</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="docs/tools.md">Tools</a> ·
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
+
 ## What it does
 
 ieee-xplore-mcp is an [MCP](https://modelcontextprotocol.io) server that runs on your machine and lets Claude Code, Claude Desktop, Cursor, VS Code, Codex or any other MCP client work with IEEE literature:

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#FBFAF7"/>
+  <g transform="translate(100 112) scale(1.5)">
+    <rect width="64" height="64" rx="12" fill="#4B3FD6"/>
+    <rect x="13" y="10" width="29" height="37" rx="3.5" fill="#FFFFFF"/>
+    <g fill="#4B3FD6">
+      <rect x="18.5" y="17" width="18" height="3" rx="1.5"/>
+      <rect x="18.5" y="23.5" width="18" height="3" rx="1.5"/>
+      <rect x="18.5" y="30" width="11" height="3" rx="1.5"/>
+    </g>
+    <circle cx="40" cy="40" r="9.5" fill="#4B3FD6" stroke="#FFFFFF" stroke-width="4"/>
+    <path d="M47 47 L53 53" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <text x="100" y="330" fill="#141414" font-family="'Iowan Old Style','Palatino Linotype','Bitstream Charter',Charter,Georgia,serif" font-size="76">IEEE Xplore,</text>
+  <text x="100" y="414" fill="#4136C4" font-family="'Iowan Old Style','Palatino Linotype','Bitstream Charter',Charter,Georgia,serif" font-size="76" font-style="italic">in your AI assistant.</text>
+  <text x="100" y="498" fill="#5B5A56" font-family="-apple-system,'Segoe UI',Helvetica,Arial,Inter,sans-serif" font-size="27">Search, cite and read IEEE papers. No API key. Full text via your library.</text>
+  <text x="100" y="556" fill="#4B3FD6" font-family="ui-monospace,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="25">danieltyukov.github.io/ieee-mcp</text>
+</svg>
